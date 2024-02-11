@@ -1,9 +1,20 @@
 import click
 import os
 import json
+import random
+import string
 
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv
+
+def generate_password(length=12, use_digits=True, use_special_chars=True):
+    chars = string.ascii_letters
+    if use_digits:
+        chars += string.digits
+    if use_special_chars:
+        chars += string.punctuation
+
+    return ''.join(random.choice(chars) for _ in range(length))
 
 def create_config_if_not_exists():
     if not os.path.isfile(".env"):
@@ -73,9 +84,10 @@ def get_existing_password(account):
 
 
 @click.command()
-@click.option('-c', '--create',nargs=3,type=str, help='create a new entry with the following args account username password')
-@click.option('-g', '--get',nargs=1, help='get an existing entry')
-def main(create, get):
+@click.option('-g', '--generate', is_flag=True,help='Generate a new password of length 12 chars with symbols, letters and digits')
+@click.option('-c', '--create',nargs=3, help='create a new entry with the following args account username password')
+@click.option('-r', '--get',nargs=1, help='get an existing entry')
+def main(create, get, generate):
 
     create_config_if_not_exists()
     load_dotenv()
@@ -97,6 +109,10 @@ def main(create, get):
             print(e)
         except:
             print("Error getting the password, please try again.")
+    
+    if generate:
+        new_password = generate_password()
+        print(new_password)
 
 
 if __name__ == "__main__":
