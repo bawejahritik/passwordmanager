@@ -38,16 +38,15 @@ def decode_password(encoded_password):
 
 def checkFileExists():
     if not os.path.isfile("passwords.json"):
-        with open('passwords.json', 'w') as fp:
-            pass
+        write_to_json({})
 
 def read_from_json():
-    with open("passwords.json", "r") as f:
+    with open("passwords.json") as f:
         data = json.load(f)
     return data
 
 def write_to_json(dict_to_add):
-    json_object = json.dumps(dict_to_add, indent=4)
+    json_object = json.dumps(dict_to_add)
     with open('passwords.json', 'w+') as fp:
         fp.write(json_object)
 
@@ -56,7 +55,7 @@ def create_new_password(account, user_name, password):
     passwords = read_from_json()
 
     if account in passwords:
-        return Exception("Account already exists. Please get the password or update the exisiting password \n")
+        raise Exception("Account already exists. Please get the password or update the exisiting password \n")
     
     encoded_password = encode_password(password)
 
@@ -97,7 +96,7 @@ def main(create, get, generate):
             create_new_password(*create)
             print("Successfully Added!")
         except Exception as e:
-            print(e)
+            print("Error:", e)
         except:
             print("Error adding the account, please try again later.")
     
